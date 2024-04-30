@@ -120,9 +120,13 @@ merge_file_re = gsub("_merging", "", merge_file)
 fin_file_info = ex_F %>% filter(csvnames %in% merge_file_re) %>% select(-filename,-rows,-overlap)
 
 fin_file_info$csvnames = paste0(gsub(".csv", "", fin_file_info$csvnames),"_merging.csv")
+fin_file_info$rows = 0
+for(i in 1:nrow(fin_file_info)){
+  tmp = read_csv(paste0(fp, "samples_exclude_0_row/", fin_file_info$csvnames[i]), show_col_types = FALSE)
+  fin_file_info$rows[i] = nrow(tmp)
+}
 
 write.csv(fin_file_info, file = "samples_df_info.csv", row.names = F)
-
 
 
 

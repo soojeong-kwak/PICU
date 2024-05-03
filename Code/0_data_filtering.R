@@ -80,13 +80,4 @@ measurement = nrow(fn_anl)    # total measurements from patients
 
 print(c(n, measurement))
 
-# train/test split 7:3 ratio
-# hn_list = unique(fn_anl$hn)
-# train_hn = sample(hn_list, size = 40)
-# test_hn  = hn_list[which(!hn_list %in% train_hn)]
-#
-# train_file = fn_anl %>% filter(hn %in% train_hn)
-# test_file  = fn_anl %>% filter(hn %in% test_hn)
-#
-# print(c(length(train_hn),nrow(train_file)))
-# print(c(length(test_hn),nrow(test_file)))
+

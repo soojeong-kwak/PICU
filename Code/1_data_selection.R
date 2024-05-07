@@ -42,11 +42,68 @@ View(pco2_data)
 write.csv(pco2_data, file = "pco2_data.csv", row.names = F)
 
 
-# pco2_data %<>%
-#   mutate(
-#     t2pco2_mins = pco2_data$t2pco2 / 60,
-#     t2pco2_hrs = pco2_data$t2pco2_mins / 60
-#   ) 
-# 
-# pco2_data$t2pco2_mins <- ifelse(abs(pco2_data$t2pco2_mins) < 1, 0, pco2_data$t2pco2_mins)
-# pco2_data$t2pco2_hrs <- ifelse(abs(pco2_data$t2pco2_mins) < 1, 0, pco2_data$t2pco2_hrs)
+##### data join
+join_1 = tibble()
+
+for (i in 1:nrow(pco2_data)){
+  
+  htwt_sub = subset(na.omit(htwt), rid == pco2_data$hn[i])
+  pco2_sub = subset(pco2_data, hn == pco2_data$hn[i])
+  pco2_sub %<>%
+    mutate(wt = NA, ht = NA)
+  
+  for (j in 1:nrow(pco2_sub)){
+    
+    time_diff = abs(htwt_sub$measure_dt - pco2_sub$pco2_dttm[j])
+    idx = which(min(time_diff) == time_diff)
+    
+    pco2_sub[j, c('wt', 'ht')] <- htwt_sub[idx, c("bwt", "ht")]
+  }
+  
+  join_1 = rbind(join_1, pco2_sub) 
+}
+join_1 = unique(join_1)
+
+
+join_2 = tibble()
+
+for (i in 1:nrow(join_1)){
+  
+  adm_sub = subset(na.omit(admission), rid == join_1$hn[i])
+  pco2_sub = subset(join_1, hn == join_1$hn[i])
+  
+  pco2_sub %<>%
+    mutate(age_month = NA, sex = NA)
+  
+  for (j in 1:nrow(pco2_sub)){
+    
+    idx = which(pco2_sub$pco2_dttm[j] >= adm_sub$adm_dt & pco2_sub$pco2_dttm[j] <= adm_sub$dc_dt)
+    
+    if(is_empty(idx)){
+      
+      time_diff = abs(adm_sub$adm_dt - pco2_sub$pco2_dttm[j])
+      idx = which(min(time_diff) == time_diff)
+      
+      pco2_sub$age_month[j] <- round(adm_sub$adm_age_day[idx]/30, 1)
+      pco2_sub$sex[j] <- adm_sub$sex[idx]
+      
+    }else {
+      
+      pco2_sub$age_month[j] <- round(adm_sub$adm_age_day[idx]/30, 1)
+      pco2_sub$sex[j] <- adm_sub$sex[idx]
+    }
+  }
+  join_2 = rbind(join_2, pco2_sub) 
+}
+join_2 = unique(join_2)
+
+# Base 분석 데이터셋
+pco2_join = join_2[,c("hn", "pco2_dttm", "pco2", "PLETH_SAT_O2", "ECG_HR", "RR", "NIBP_SYS", "NIBP_DIA", "NIBP_MEAN",
+                      "t2pco2", "wt", "ht", "age_month", "sex")]
+write.csv(pco2_join, file = "pco2_join.csv", row.names = F)
+
+
+
+
+
+

@@ -9,7 +9,7 @@ fn_overlap = tibble()
 
 for (f in unique(fn_rows$hn)) {
   
-  tmp = fn_rows %>% filter(hn == f)
+  tmp = fn_rows %>% dplyr::filter(hn == f)
   
   for (i in 1:nrow(tmp)) {
     
@@ -31,8 +31,8 @@ for (f in unique(fn_rows$hn)) {
 }
 save(fn_overlap, file = "sample_df_overlap_TF.RData")
 
-ex = fn_overlap %>% filter(hn %in% fn_anl$hn)
-ex_T = ex %>% filter(overlap == T)
+ex = fn_overlap %>% dplyr::filter(hn %in% fn_anl$hn)
+ex_T = ex %>% dplyr::filter(overlap == T)
 
 
 ##### 1) 혈액검사 간격이 좁은 경우, 전후 2시간(총 4시간)에 겹치는 구간 발생 => 각각의 독립적인 값으로 사용
@@ -127,6 +127,7 @@ for(i in 1:nrow(fin_file_info)){
 }
 
 write.csv(fin_file_info, file = "samples_df_info.csv", row.names = F)
+
 
 
 

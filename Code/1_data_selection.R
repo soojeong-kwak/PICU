@@ -3,7 +3,6 @@ fp = "C:/Users/user/Desktop/PICU/PCO2/0 Data/"
 sp = "C:/Users/user/Desktop/PICU/PCO2/2 Works/"
 
 source(paste0(sp, "99_packageList.R"))
-source(paste0(sp, "99_EDA_func.R"))
 
 fin_file_info = read_csv(paste0(fp, "samples_exclude_0_row/samples_df_info.csv"), show_col_types = FALSE)
 
@@ -99,7 +98,7 @@ join_2 = unique(join_2)
 
 # Base 분석 데이터셋
 pco2_join = join_2[,c("hn", "pco2_dttm", "pco2", "PLETH_SAT_O2", "ECG_HR", "RR", "NIBP_SYS", "NIBP_DIA", "NIBP_MEAN",
-                      "t2pco2", "wt", "ht", "age_month", "sex")]
+                      "wt", "ht", "age_month", "sex")]
 write.csv(pco2_join, file = "pco2_join.csv", row.names = F)
 
 
